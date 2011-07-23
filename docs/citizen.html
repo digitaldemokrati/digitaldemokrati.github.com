@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>citizen.rb</title>
+  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>citizen.rb</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-1">&#182;</a>
+        </div>
+        
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Citizen'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Citizen">&#182;</a>
+        </div>
+        <h1>Citizen</h1>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>The Citizen is the most basic unit of the Digital Demokrati system. It
+represents a real person having an account on the site, being able to make
+proposals, submit arguments in debates, vote, appoint representatives etc.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="k">class</span> <span class="nc">Citizen</span> <span class="o">&lt;</span> <span class="no">Ohm</span><span class="o">::</span><span class="no">Model</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
+        </div>
+        <p>To begin with, we need to define various attributes that a citizen has, like
+a first and last name, an email address etc.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">attribute</span> <span class="ss">:firstname</span>
+  <span class="n">attribute</span> <span class="ss">:lastname</span>
+  <span class="n">attribute</span> <span class="ss">:email</span>
+  <span class="n">attribute</span> <span class="ss">:phone</span>
+  <span class="n">attribute</span> <span class="ss">:presentation</span>
+  <span class="n">attribute</span> <span class="ss">:email_validated</span>
+  <span class="n">attribute</span> <span class="ss">:phone_validated</span>
+  <span class="n">attribute</span> <span class="ss">:admin</span>
+  <span class="n">attribute</span> <span class="ss">:invites</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-5'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-5">&#182;</a>
+        </div>
+        <p>For adding MP:s (riksdagsledamöter)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">attribute</span> <span class="ss">:origin_url</span>
+  <span class="n">attribute</span> <span class="ss">:party</span>
+  <span class="n">attribute</span> <span class="ss">:district</span>
+  <span class="n">attribute</span> <span class="ss">:birthyear</span>
+  <span class="n">attribute</span> <span class="ss">:title</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-6">&#182;</a>
+        </div>
+        <p>Some of them are mandatory.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">validate</span>
+    <span class="n">assert_present</span> <span class="ss">:firstname</span>
+    <span class="n">assert_present</span> <span class="ss">:lastname</span>
+    <span class="n">assert_present</span> <span class="ss">:email</span>
+    <span class="n">assert_present</span> <span class="ss">:phone</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-7'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-7">&#182;</a>
+        </div>
+        <p>Some of them have to be unique.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="n">assert_unique</span> <span class="ss">:email</span>
+    <span class="n">assert_unique</span> <span class="ss">:phone</span>
+ <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-8'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-8">&#182;</a>
+        </div>
+        <p>Some of them we want to use for lookups.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">index</span> <span class="ss">:email</span>
+  <span class="n">index</span> <span class="ss">:phone</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-9'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-9">&#182;</a>
+        </div>
+        <p>Relations to other model objects.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">collection</span> <span class="ss">:votes</span><span class="p">,</span>        <span class="no">Vote</span>
+  <span class="n">collection</span> <span class="ss">:propositions</span><span class="p">,</span> <span class="no">Proposition</span>
+  <span class="n">collection</span> <span class="ss">:arguments</span><span class="p">,</span>    <span class="no">Argument</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-10'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-10">&#182;</a>
+        </div>
+        <p>Here we use sets instead of collections, since I didn&rsquo;t get many-to-many
+relations to work between objects of the same model class. In other words, we
+do not do this:</p>
+
+<pre><code>collection :supporters, Citizen
+reference :representative, Citizen
+</code></pre>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">set</span> <span class="ss">:supporters</span><span class="p">,</span>      <span class="no">Citizen</span>
+  <span class="n">set</span> <span class="ss">:representatives</span><span class="p">,</span> <span class="no">Citizen</span>
+  
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Concepts'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Concepts">&#182;</a>
+        </div>
+        <h1>Concepts</h1>
+
+<p>Various methods having to do with voting, calculating votations, various kinds of voting power etc.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Votesum'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Votesum">&#182;</a>
+        </div>
+        <h2>Votesum</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-13'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-13">&#182;</a>
+        </div>
+        <p>A votesum represents how many partial votes a citizen represents <em>in a given vote</em>.
+The size depends on how many citizens a voter represents and on how many of these
+participated directly in the vote themselves.</p>
+
+<p>This is perhaps the most central algorithm in the whole system.</p>
+
+<p>To do the calculation, the function needs a list of the voters who have already
+participated in a certain vote.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">votesum</span> <span class="n">voters</span>
+    <span class="n">supporters</span><span class="o">.</span><span class="n">reject</span> <span class="p">{</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span> <span class="n">voters</span><span class="o">.</span><span class="n">include?</span> <span class="n">c</span> <span class="p">}</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="nb">p</span><span class="p">,</span> <span class="n">c</span><span class="o">|</span>
+      <span class="n">voters</span> <span class="o">&lt;&lt;</span> <span class="n">c</span>
+      <span class="nb">p</span> <span class="o">+=</span> <span class="n">c</span><span class="o">.</span><span class="n">votesum</span><span class="p">(</span><span class="n">voters</span><span class="p">)</span> <span class="o">/</span> <span class="n">c</span><span class="o">.</span><span class="n">representatives</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">to_f</span>
+    <span class="k">end</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Maxvote'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Maxvote">&#182;</a>
+        </div>
+        <h2>Maxvote</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-15'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-15">&#182;</a>
+        </div>
+        <p>This is the <em>theoretical maximum voting power</em> of a given citizen, that is, the
+power granted if none of the people one represents participates in a particular
+vote.</p>
+
+<p>In practice, this is more of a status indicator, it is not used for
+calculating actual voting on issues. It is used though, for one of the main
+rankings of the most powerful citizens in the system.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">maxvote</span>
+    <span class="n">representing</span> <span class="o">=</span> <span class="n">supporters</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="nb">p</span><span class="p">,</span> <span class="n">c</span><span class="o">|</span>
+      <span class="nb">p</span> <span class="o">+=</span> <span class="mi">1</span><span class="o">.</span><span class="mi">0</span><span class="o">/</span><span class="n">c</span><span class="o">.</span><span class="n">representatives</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">length</span>
+    <span class="k">end</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">representing</span><span class="p">)</span>
+  <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Influence'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Influence">&#182;</a>
+        </div>
+        <h2>Influence</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-17'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-17">&#182;</a>
+        </div>
+        <p>Influence is a measure of <em>manifested voting power</em> and thus factors in the
+degree of activity. Influence is the sum of ones votesums (see above) in all
+the votes one has participated in with a direct vote.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">influence</span>
+  <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Debate_points'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Debate_points">&#182;</a>
+        </div>
+        <h2>Debate points</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-19'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-19">&#182;</a>
+        </div>
+        <p>Debate points are a measure of <em>popular arguments</em> made in debates. Debate points
+are calculated as the sum of the values of all votes made on ones arguments.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">debate_points</span>
+    <span class="n">arguments</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="p">,</span> <span class="n">a</span><span class="o">|</span> <span class="n">s</span> <span class="o">+=</span> <span class="n">a</span><span class="o">.</span><span class="n">score</span> <span class="p">}</span> <span class="k">rescue</span> <span class="mi">0</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Debate_quality'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Debate_quality">&#182;</a>
+        </div>
+        <h2>Debate quality</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-21'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-21">&#182;</a>
+        </div>
+        <p>Average number of debate points per argument. A citizen with a high number is someone who
+consistently contributes arguments that are appreciated by other users. (To make it even
+better we might measure, say, the median rather than the average.)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">debate_quality</span>
+    <span class="n">debate_points</span> <span class="o">/</span> <span class="n">arguments</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">to_f</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Proposition_score'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Proposition_score">&#182;</a>
+        </div>
+        <h2>Proposition score</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-23'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-23">&#182;</a>
+        </div>
+        <p>Total value of votes vast on ones propositions.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">propscore</span>
+    <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">propositions</span><span class="o">.</span><span class="n">empty?</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">propositions</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">score</span><span class="p">,</span> <span class="n">prop</span><span class="o">|</span>
+      <span class="n">score</span> <span class="o">+=</span> <span class="n">prop</span><span class="o">.</span><span class="n">result</span>
+    <span class="k">end</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">score</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Rebel'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Rebel">&#182;</a>
+        </div>
+        <h2>Rebel</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-25'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-25">&#182;</a>
+        </div>
+        <p>Rebel score &ndash; the degree to which a citizen dissents from majority opinion.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">rebel</span>
+    <span class="n">propvotes</span> <span class="o">=</span> <span class="n">votes</span><span class="o">.</span><span class="n">select</span><span class="p">{</span> <span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">v</span><span class="o">.</span><span class="n">proposition</span> <span class="p">}</span>
+    <span class="n">dissents</span> <span class="o">=</span> <span class="n">propvotes</span><span class="o">.</span><span class="n">reject</span> <span class="p">{</span> <span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">to_f</span> <span class="o">==</span> <span class="n">v</span><span class="o">.</span><span class="n">proposition</span><span class="o">.</span><span class="n">trinary_score</span> <span class="ow">or</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">to_f</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span> <span class="p">}</span>
+    <span class="n">dissents</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">to_f</span> <span class="o">/</span> <span class="n">propvotes</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">to_f</span>
+  <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Populist'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Populist">&#182;</a>
+        </div>
+        <h2>Populist</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-27'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-27">&#182;</a>
+        </div>
+        <p>Populist score &ndash; the opposite of &lsquo;rebel score&rsquo;.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">populist</span>
+    <span class="mi">1</span> <span class="o">-</span> <span class="n">rebel</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Vote_share'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Vote_share">&#182;</a>
+        </div>
+        <h2>Vote share</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-29'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-29">&#182;</a>
+        </div>
+        <p>The fraction of a vote given to each of ones representatives.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">vote_share</span>
+    <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">representatives</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">to_f</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Average_trust'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Average_trust">&#182;</a>
+        </div>
+        <h2>Average trust</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-31'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-31">&#182;</a>
+        </div>
+        <p>Average vote share of ones representatives votes.</p>
+
+<p>NOTE: Please come up with a better name soon.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">average_trust</span>
+    <span class="n">total_supported_by_supporters</span> <span class="o">=</span> <span class="n">supporters</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span><span class="o">|</span><span class="n">a</span><span class="p">,</span><span class="n">c</span><span class="o">|</span> <span class="n">a</span> <span class="o">+=</span> <span class="n">c</span><span class="o">.</span><span class="n">representatives</span><span class="o">.</span><span class="n">size</span><span class="o">.</span><span class="n">to_f</span> <span class="p">}</span>
+    <span class="p">(</span><span class="n">supporters</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="n">total_supported_by_supporters</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="k">rescue</span> <span class="s2">&quot;-&quot;</span>
+  <span class="k">end</span>
+  
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Representation'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Representation">&#182;</a>
+        </div>
+        <h1>Representation</h1>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-33'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-33">&#182;</a>
+        </div>
+        <p>Appoint and unappoint another citizen as representative.</p>
+
+<p>Both methods expect a Citizen object as argument.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">support</span> <span class="n">citizen</span>
+    <span class="n">representatives</span> <span class="o">&lt;&lt;</span> <span class="n">citizen</span>
+    <span class="n">citizen</span><span class="o">.</span><span class="n">supporters</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">unsupport</span> <span class="n">citizen</span>
+    <span class="n">representatives</span><span class="o">.</span><span class="n">delete</span> <span class="n">citizen</span>
+    <span class="n">citizen</span><span class="o">.</span><span class="n">supporters</span><span class="o">.</span><span class="n">delete</span> <span class="nb">self</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Authentication'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Authentication">&#182;</a>
+        </div>
+        <h1>Authentication</h1>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-35'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-35">&#182;</a>
+        </div>
+        <p>Digital Demokrati never saves passwords, since this is a very bad practice.
+Instead, BCrypt is used and only cryptographic hashes are stored in the database.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">attribute</span> <span class="ss">:password_hash</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-36'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-36">&#182;</a>
+        </div>
+        <p>Check if the BCrypt hash of a given password (provided by a user) matches the
+hash stored in the database. The BCrypt gem does all the heavy lifting.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">password</span>
+    <span class="vi">@password</span> <span class="o">||=</span> <span class="no">BCrypt</span><span class="o">::</span><span class="no">Password</span><span class="o">.</span><span class="n">new</span> <span class="n">password_hash</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-37'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-37">&#182;</a>
+        </div>
+        <p>Setting a new password. Again, we rely on the BCrypt gem.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">password</span><span class="o">=</span> <span class="n">new_password</span>
+    <span class="vi">@password</span> <span class="o">=</span> <span class="no">BCrypt</span><span class="o">::</span><span class="no">Password</span><span class="o">.</span><span class="n">create</span> <span class="n">new_password</span>
+    <span class="nb">self</span><span class="o">.</span><span class="n">password_hash</span> <span class="o">=</span> <span class="vi">@password</span>
+    <span class="n">save</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-38'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-38">&#182;</a>
+        </div>
+        <p>This should perhaps rather be handled with permissions (see below).</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">confirmed</span>
+    <span class="n">phone_validated</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span> <span class="p">?</span> <span class="s2">&quot;true&quot;</span> <span class="p">:</span> <span class="kp">nil</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-39'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-39">&#182;</a>
+        </div>
+        <p>Basic implementation of different levels of permissions in the system. The idea
+is for the citizen model to have a list of permissions, like &ldquo;citizen&rdquo;, &ldquo;admin&rdquo; etc.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">may?</span> <span class="n">realm</span>
+    <span class="n">permissions</span><span class="o">.</span><span class="n">include?</span> <span class="n">realm</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-String_generators'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-String_generators">&#182;</a>
+        </div>
+        <h1>String generators</h1>
+
+<p>Convenience methods for generating strings and HTML, to minimize logic in the views.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-41'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-41">&#182;</a>
+        </div>
+        <p>The full name of the citizen.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">name</span>
+    <span class="s2">&quot;</span><span class="si">#{</span><span class="n">firstname</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">lastname</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Links'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Links">&#182;</a>
+        </div>
+        <h2>Links</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-43'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-43">&#182;</a>
+        </div>
+        <p>Plain link with just the name.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">link</span>
+    <span class="s2">&quot;&lt;a href=&#39;/medborgare/</span><span class="si">#{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#39;&gt;</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">&lt;/a&gt;&quot;</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-44'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-44">&#182;</a>
+        </div>
+        <p>Link with maxpower included (for the main ranking of citizens)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">link_maxvote</span>
+    <span class="s2">&quot;&lt;a href=&#39;/medborgare/</span><span class="si">#{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#39;&gt;</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">#{</span><span class="n">maxvote</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">)&lt;/a&gt;&quot;</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-45'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-45">&#182;</a>
+        </div>
+        <p>Link with debate points included, also for rankings etc.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">link_debate_points</span>
+    <span class="s2">&quot;&lt;a href=&#39;/medborgare/</span><span class="si">#{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#39;&gt;</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">#{</span><span class="n">debate_points</span><span class="si">}</span><span class="s2">)&lt;/a&gt;&quot;</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-46'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-46">&#182;</a>
+        </div>
+        <p>Link with propscore included, also for rankings etc.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">link_propscore</span>
+    <span class="s2">&quot;&lt;a href=&#39;/medborgare/</span><span class="si">#{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#39;&gt;</span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">#{</span><span class="n">propscore</span><span class="si">}</span><span class="s2">)&lt;/a&gt;&quot;</span>
+  <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-For_easier_imports&amp;hellip;'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-For_easier_imports&amp;hellip;">&#182;</a>
+        </div>
+        <h2>For easier imports&hellip;</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-48'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-48">&#182;</a>
+        </div>
+        <p>Give this function a name and you receive either a Citizen object or nil.</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">lookup_by_name</span> <span class="nb">name</span>
+
+    <span class="nb">name</span> <span class="o">=</span> <span class="nb">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; i &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span> <span class="k">if</span> <span class="nb">name</span> <span class="o">=~</span> <span class="sr">/ i /</span>
+    
+    <span class="nb">name</span> <span class="o">=</span> <span class="nb">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; m.fl.&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+    <span class="nb">name</span> <span class="o">=</span> <span class="nb">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; (&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">all</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">select</span><span class="p">{</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="nb">name</span> <span class="p">}</span>
+    <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">length</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Citizen</span>
+      <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">first</span>
+    <span class="k">else</span>
+      <span class="nb">puts</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">WARNING! Failed to lookup citizen by name: </span><span class="si">#{</span><span class="nb">name</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="k">return</span> <span class="kp">nil</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+
+<span class="k">end</span></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>

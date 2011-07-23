@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>argument.rb</title>
+  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>argument.rb</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-1">&#182;</a>
+        </div>
+        
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Argument'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Argument">&#182;</a>
+        </div>
+        <h1>Argument</h1>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>The Argument is the basic unit of debate. Technically, it is similar to the
+well known concept of comment. They exist in threads, or rather, heirarchical
+trees and are votable in a manner similar to proposals.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="k">class</span> <span class="nc">Argument</span> <span class="o">&lt;</span> <span class="no">Ohm</span><span class="o">::</span><span class="no">Model</span>
+  <span class="n">attribute</span> <span class="ss">:text</span>
+  <span class="n">reference</span> <span class="ss">:citizen</span><span class="p">,</span> <span class="no">Citizen</span>
+  <span class="n">reference</span> <span class="ss">:proposition</span><span class="p">,</span> <span class="no">Proposition</span>
+  <span class="n">reference</span> <span class="ss">:vote</span><span class="p">,</span> <span class="no">Vote</span>
+  <span class="n">collection</span> <span class="ss">:votes</span><span class="p">,</span> <span class="no">Vote</span>
+  <span class="n">reference</span> <span class="ss">:argument</span><span class="p">,</span> <span class="no">Argument</span>
+  <span class="n">collection</span> <span class="ss">:arguments</span><span class="p">,</span> <span class="no">Argument</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
+        </div>
+        <p>Returns the thing that this argument is in response to. This method is needed
+because the parent object can be both a Proposition and another Comment.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">parent</span>
+    <span class="n">proposition</span> <span class="o">||</span> <span class="n">argument</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-5">&#182;</a>
+        </div>
+        <p>The proposition that is the ultimate grandparent of this comment.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">prop</span>
+    <span class="nb">p</span> <span class="o">=</span> <span class="n">parent</span>
+    <span class="nb">p</span> <span class="o">=</span> <span class="nb">p</span><span class="o">.</span><span class="n">parent</span> <span class="k">until</span> <span class="nb">p</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Proposition</span>
+    <span class="nb">p</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-6">&#182;</a>
+        </div>
+        <p>Recursively finds all the replies to this argument, all the replies to the replies etc.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">argument_tree</span>
+    <span class="n">arguments</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">arguments</span><span class="o">.</span><span class="n">to_a</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">tree</span><span class="p">,</span> <span class="n">arg</span><span class="o">|</span> <span class="n">tree</span> <span class="o">&lt;&lt;</span> <span class="n">arg</span><span class="o">.</span><span class="n">argument_tree</span> <span class="p">}</span>
+  <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-7'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-7">&#182;</a>
+        </div>
+        <p>This should probably be called &lsquo;points&rsquo; or some such. The total value of votes cast
+on a comment. The basic measure of the arguments popularity/quality.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">score</span>
+    <span class="n">votes</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">s</span><span class="p">,</span> <span class="n">v</span><span class="o">|</span> <span class="n">s</span> <span class="o">+=</span> <span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">to_i</span> <span class="p">}</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-8'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-8">&#182;</a>
+        </div>
+        <p>This is an experimental measurement, weighing in a comments effect in regards to
+stimulating further discussion. In addition to its own points, the argument gets
+a tenth of the upvotes of children, a hundreth of upvotes of grandchildren etc.</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="k">def</span> <span class="nf">karma</span> <span class="n">generation</span><span class="o">=</span><span class="mi">1</span>
+    <span class="n">score</span> <span class="o">+</span> <span class="n">arguments</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">s</span><span class="p">,</span> <span class="n">a</span><span class="o">|</span>
+      <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">karma</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="n">s</span>
+      <span class="k">else</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="n">a</span><span class="o">.</span><span class="n">karma</span><span class="p">(</span><span class="n">generation</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_f</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="n">generation</span>
+      <span class="k">end</span>
+    <span class="k">end</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+  <span class="k">end</span>
+
+<span class="k">end</span></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>

@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>app.rb</title>
+  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>app.rb</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-1">&#182;</a>
+        </div>
+        
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Digital_Demokrati'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Digital_Demokrati">&#182;</a>
+        </div>
+        <h1>Digital Demokrati</h1>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>This is the actual web application.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="nb">require</span> <span class="s1">&#39;rubygems&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;ohm&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;sinatra&#39;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
+        </div>
+        <p>Very very dirty way of determining if we are supposed to access either the
+production or the local development database.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">exist?</span> <span class="s1">&#39;./misc/this_is_localhost&#39;</span>
+  <span class="no">Ohm</span><span class="o">.</span><span class="n">connect</span>
+<span class="k">else</span>
+  <span class="no">Ohm</span><span class="o">.</span><span class="n">connect</span> <span class="ss">:url</span> <span class="o">=&gt;</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;credentials/redis.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span>
+<span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-5">&#182;</a>
+        </div>
+        <p>Please move this to config.ru or something.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="nb">require</span> <span class="s1">&#39;./lib/models/citizen&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;./lib/models/proposition&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;./lib/models/argument&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;./lib/models/vote&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;./lib/models/hashkey&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;./lib/helpers&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;./lib/elks/elks&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;./lib/auth&#39;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-6'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-6">&#182;</a>
+        </div>
+        <p>This is the application itself.</p>
+
+<p>Should perhaps be renamed&hellip;</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="k">class</span> <span class="nc">Democracy</span> <span class="o">&lt;</span> <span class="no">Sinatra</span><span class="o">::</span><span class="no">Application</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-7'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-7">&#182;</a>
+        </div>
+        <p>Sinatra configuration.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">configure</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-8'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-8">&#182;</a>
+        </div>
+        <p>set :environment, ENV[&lsquo;DATABASE_URL&rsquo;] ? :production : :development</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="n">set</span> <span class="ss">:logging</span><span class="p">,</span> <span class="kp">true</span>
+    <span class="n">set</span> <span class="ss">:dump_errors</span><span class="p">,</span> <span class="kp">true</span>
+    <span class="n">use</span> <span class="no">Rack</span><span class="o">::</span><span class="no">Session</span><span class="o">::</span><span class="no">Pool</span>
+  <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-9'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-9">&#182;</a>
+        </div>
+        <p>Dashboard if logged in, otherwise introduction about page.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/&quot;</span> <span class="k">do</span>
+    <span class="n">redirect</span> <span class="s1">&#39;/om&#39;</span> <span class="k">unless</span> <span class="n">authorized?</span>
+    <span class="n">haml</span> <span class="ss">:agora</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-10'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-10">&#182;</a>
+        </div>
+        <p>Get the page for a user profile.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/medborgare/:id&quot;</span> <span class="k">do</span>
+    <span class="vi">@citizen</span> <span class="o">=</span> <span class="no">Citizen</span><span class="o">[</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]]</span>
+    <span class="n">haml</span> <span class="ss">:citizen</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-11'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-11">&#182;</a>
+        </div>
+        <p>Get the page for editing a user profile.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/medborgare/:id/edit&quot;</span> <span class="k">do</span>
+    <span class="vi">@citizen</span> <span class="o">=</span> <span class="no">Citizen</span><span class="o">[</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]]</span>
+    <span class="k">return</span> <span class="s2">&quot;No such Citizen: </span><span class="si">#{</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">unless</span> <span class="vi">@citizen</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Citizen</span>
+    <span class="k">return</span> <span class="s2">&quot;You are not </span><span class="si">#{</span><span class="vi">@citizen</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">!&quot;</span> <span class="k">unless</span> <span class="vi">@citizen</span> <span class="o">==</span> <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">]</span>
+    <span class="n">haml</span> <span class="ss">:citizen_edit</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-12'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-12">&#182;</a>
+        </div>
+        <p>Post an update of a user profile.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">post</span> <span class="s2">&quot;/medborgare/:id/edit&quot;</span> <span class="k">do</span>
+    <span class="vi">@citizen</span> <span class="o">=</span> <span class="no">Citizen</span><span class="o">[</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]]</span>
+    <span class="nb">p</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="s1">&#39;citizen_edit&#39;</span><span class="o">]</span>
+    <span class="k">return</span> <span class="s2">&quot;Det finns ingen medborgare nr </span><span class="si">#{</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="k">unless</span> <span class="vi">@citizen</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Citizen</span>
+    <span class="k">return</span> <span class="s2">&quot;Du är inte </span><span class="si">#{</span><span class="vi">@citizen</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">!&quot;</span> <span class="k">unless</span> <span class="vi">@citizen</span> <span class="o">==</span> <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">]</span>
+    <span class="k">return</span> <span class="s2">&quot;Du måste ange en giltig e-postadress!&quot;</span>          <span class="k">unless</span> <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;email&#39;</span><span class="o">].</span><span class="n">match</span><span class="p">(</span><span class="sr">/\w+\@\w+\.\w+/</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;Du måste ange ett giltigt svenskt mobilnummer!&quot;</span> <span class="k">unless</span> <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;phone&#39;</span><span class="o">].</span><span class="n">length</span> <span class="o">==</span> <span class="mi">12</span> <span class="ow">and</span> <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;phone&#39;</span><span class="o">][</span><span class="mi">0</span><span class="o">.</span><span class="n">.</span><span class="mi">2</span><span class="o">]</span> <span class="o">==</span> <span class="s1">&#39;+46&#39;</span>
+    
+    <span class="nb">p</span><span class="o">.</span><span class="n">delete</span> <span class="s1">&#39;password&#39;</span> <span class="k">if</span> <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;password&#39;</span><span class="o">].</span><span class="n">empty?</span>
+    
+    <span class="k">if</span> <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;phone&#39;</span><span class="o">]</span> <span class="o">!=</span> <span class="vi">@citizen</span><span class="o">.</span><span class="n">phone</span>
+      <span class="vi">@citizen</span><span class="o">.</span><span class="n">phone_validated</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+      <span class="no">Elks</span><span class="o">.</span><span class="n">sms</span>  <span class="s2">&quot;+46766861006&quot;</span><span class="p">,</span>
+                <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;phone&#39;</span><span class="o">]</span><span class="p">,</span>
+                <span class="s2">&quot;Digital Demokrati: Svara med ett icke-tomt SMS för att verifiera ditt mobilnummer.&quot;</span>
+    <span class="k">end</span>
+
+    <span class="vi">@citizen</span><span class="o">.</span><span class="n">update</span> <span class="nb">p</span>
+    <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Uppdaterade profilen för </span><span class="si">#{</span><span class="vi">@citizen</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">. Om du bytte mobilnummer kommer du att få ett SMS som du måste svara på för att verifiera.&quot;</span><span class="p">,</span> <span class="ss">:accept</span><span class="p">)</span>
+    <span class="n">redirect</span> <span class="s2">&quot;/medborgare/</span><span class="si">#{</span><span class="vi">@citizen</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-13'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-13">&#182;</a>
+        </div>
+        <p>Toggle representation status between two citizens.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/medborgare/:id/rep&quot;</span> <span class="k">do</span>
+    <span class="vi">@citizen</span> <span class="o">=</span> <span class="no">Citizen</span><span class="o">[</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]]</span>
+    <span class="k">return</span> <span class="s2">&quot;No such Citizen: </span><span class="si">#{</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">unless</span> <span class="vi">@citizen</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Citizen</span>
+    <span class="k">if</span> <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">].</span><span class="n">representatives</span><span class="o">.</span><span class="n">include?</span> <span class="vi">@citizen</span>
+      <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">].</span><span class="n">unsupport</span> <span class="vi">@citizen</span>
+    <span class="k">else</span>
+      <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">].</span><span class="n">support</span> <span class="vi">@citizen</span>
+    <span class="k">end</span>
+    <span class="n">redirect</span> <span class="s2">&quot;/medborgare/</span><span class="si">#{</span><span class="vi">@citizen</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+  
+  <span class="n">get</span> <span class="s2">&quot;/riksdagen&quot;</span> <span class="k">do</span>
+    <span class="vi">@title</span> <span class="o">=</span> <span class="s2">&quot;Riksdagsledamöter (maxröst i Digital Demokrati)&quot;</span>
+    <span class="vi">@citizens</span> <span class="o">=</span> <span class="no">Citizen</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">reject</span> <span class="p">{</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span> <span class="n">c</span><span class="o">.</span><span class="n">origin_url</span><span class="o">.</span><span class="n">empty?</span> <span class="p">}</span><span class="o">.</span><span class="n">sort</span><span class="p">{</span><span class="o">|</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="o">|</span> <span class="n">b</span><span class="o">.</span><span class="n">maxvote</span> <span class="o">&lt;=&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">maxvote</span> <span class="p">}</span>
+    <span class="n">haml</span> <span class="ss">:citizen_big_list</span>
+  <span class="k">end</span>
+
+  <span class="n">get</span> <span class="s2">&quot;/alla&quot;</span> <span class="k">do</span>
+    <span class="vi">@title</span> <span class="o">=</span> <span class="s2">&quot;Alla medlemmar i Digital Demokrati (sorterade efter maxröst)&quot;</span>
+    <span class="vi">@citizens</span> <span class="o">=</span> <span class="no">Citizen</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">sort</span><span class="p">{</span><span class="o">|</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="o">|</span> <span class="n">b</span><span class="o">.</span><span class="n">maxvote</span> <span class="o">&lt;=&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">maxvote</span> <span class="p">}</span>
+    <span class="n">haml</span> <span class="ss">:citizen_big_list</span>
+  <span class="k">end</span>
+
+  <span class="n">get</span> <span class="s2">&quot;/medlemmar&quot;</span> <span class="k">do</span>
+    <span class="vi">@title</span> <span class="o">=</span> <span class="s2">&quot;Alla aktiva medlemmar i Digital Demokrati (sorterade efter maxröst)&quot;</span>
+    <span class="vi">@citizens</span> <span class="o">=</span> <span class="no">Citizen</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">select</span><span class="p">{</span> <span class="o">|</span><span class="n">c</span><span class="o">|</span> <span class="n">c</span><span class="o">.</span><span class="n">origin_url</span><span class="o">.</span><span class="n">empty?</span> <span class="p">}</span><span class="o">.</span><span class="n">sort</span><span class="p">{</span><span class="o">|</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="o">|</span> <span class="n">b</span><span class="o">.</span><span class="n">maxvote</span> <span class="o">&lt;=&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">maxvote</span> <span class="p">}</span>
+    <span class="n">haml</span> <span class="ss">:citizen_big_list</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-14'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-14">&#182;</a>
+        </div>
+        <p>Fetch the page for a proposition.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/proposition/:id/?&quot;</span> <span class="k">do</span>
+    <span class="vi">@proposition</span> <span class="o">=</span> <span class="no">Proposition</span><span class="o">[</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]]</span>
+    <span class="k">return</span> <span class="s2">&quot;Det finns ingen proposition med id </span><span class="si">#{</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="si">}</span><span class="s2">.&quot;</span> <span class="k">unless</span> <span class="vi">@proposition</span><span class="o">.</span><span class="n">is_a?</span> <span class="no">Proposition</span>
+    <span class="n">haml</span> <span class="ss">:proposition</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-15'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-15">&#182;</a>
+        </div>
+        <p>Render the page for creating new propositions.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/create_proposition&quot;</span> <span class="k">do</span>
+    <span class="n">authorize!</span>
+    <span class="n">haml</span> <span class="ss">:proposition_create</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-16'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-16">&#182;</a>
+        </div>
+        <p>Post new propositions.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">post</span> <span class="s2">&quot;/create_proposition&quot;</span> <span class="k">do</span>
+    <span class="n">authorize!</span>
+    <span class="nb">p</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="s1">&#39;proposition&#39;</span><span class="o">]</span>
+    <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;citizen&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">]</span>
+    <span class="nb">puts</span> <span class="s2">&quot;this user is proposing: </span><span class="si">#{</span><span class="nb">p</span><span class="o">[</span><span class="s1">&#39;citizen&#39;</span><span class="o">]</span><span class="si">}</span><span class="s2">&quot;</span>    
+    <span class="n">created</span> <span class="o">=</span> <span class="no">Proposition</span><span class="o">.</span><span class="n">create</span> <span class="nb">p</span>
+    <span class="nb">puts</span> <span class="s2">&quot;created proposition: </span><span class="si">#{</span><span class="n">created</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">unless</span> <span class="n">created</span><span class="o">.</span><span class="n">valid?</span>
+      <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Något gick fel - ditt förslag har inte sparats!&quot;</span><span class="p">,</span> <span class="ss">:error</span><span class="p">)</span>
+      <span class="vi">@prop_title</span><span class="p">,</span> <span class="vi">@prop_text</span> <span class="o">=</span> <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;title&#39;</span><span class="o">]</span><span class="p">,</span> <span class="nb">p</span><span class="o">[</span><span class="s1">&#39;text&#39;</span><span class="o">]</span>
+      <span class="n">haml</span> <span class="ss">:create_proposition</span>
+    <span class="k">end</span>
+    <span class="n">redirect</span> <span class="s2">&quot;/proposition/</span><span class="si">#{</span><span class="n">created</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-17'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-17">&#182;</a>
+        </div>
+        <p>Fetch the page for a single argument.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/argument/:id&quot;</span> <span class="k">do</span>
+    <span class="n">redirect</span> <span class="s2">&quot;/proposition/</span><span class="si">#{</span><span class="no">Argument</span><span class="o">[</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]].</span><span class="n">prop</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-18'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-18">&#182;</a>
+        </div>
+        <p>Create a new argument.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">post</span> <span class="s2">&quot;/argument&quot;</span> <span class="k">do</span>
+    <span class="n">authorize!</span>
+    
+    <span class="k">if</span> <span class="n">params</span><span class="o">[</span><span class="s1">&#39;argument&#39;</span><span class="o">]</span>
+      <span class="n">params</span><span class="o">[</span><span class="s1">&#39;argument&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="no">Argument</span><span class="o">[</span><span class="n">params</span><span class="o">[</span><span class="s1">&#39;argument&#39;</span><span class="o">]]</span>
+    <span class="k">elsif</span> <span class="n">params</span><span class="o">[</span><span class="s1">&#39;proposition&#39;</span><span class="o">]</span>
+      <span class="n">params</span><span class="o">[</span><span class="s1">&#39;proposition&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="no">Proposition</span><span class="o">[</span><span class="n">params</span><span class="o">[</span><span class="s1">&#39;proposition&#39;</span><span class="o">]]</span>
+    <span class="k">else</span>
+      <span class="k">return</span> <span class="s2">&quot;No parent given.&quot;</span>
+    <span class="k">end</span>
+    
+    <span class="k">return</span> <span class="s2">&quot;Inga argument detekterade.&quot;</span> <span class="k">if</span> <span class="n">params</span><span class="o">[</span><span class="s1">&#39;text&#39;</span><span class="o">].</span><span class="n">empty?</span>
+    
+    <span class="n">params</span><span class="o">[</span><span class="s1">&#39;citizen&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">]</span>
+    
+    <span class="vi">@created</span> <span class="o">=</span> <span class="no">Argument</span><span class="o">.</span><span class="n">create</span> <span class="n">params</span>
+    
+    <span class="n">redirect</span> <span class="s2">&quot;/proposition/</span><span class="si">#{</span><span class="vi">@created</span><span class="o">.</span><span class="n">prop</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-19'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-19">&#182;</a>
+        </div>
+        <p>Voting on arguments.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/argument/:id/:value&quot;</span> <span class="k">do</span>
+    <span class="n">authorize!</span>
+    <span class="vi">@user</span> <span class="o">=</span> <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">]</span>
+    <span class="vi">@argument</span> <span class="o">=</span> <span class="no">Argument</span><span class="o">[</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]]</span>
+    <span class="nb">puts</span> <span class="s2">&quot;arg getting upvote: </span><span class="si">#{</span><span class="vi">@argument</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-20'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-20">&#182;</a>
+        </div>
+        <p>@vote = Vote.find( :citizen =&gt; @user, :proposition =&gt; @proposition ).first || </p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="vi">@vote</span> <span class="o">=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">select</span><span class="p">{</span> <span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">v</span><span class="o">.</span><span class="n">citizen</span> <span class="o">==</span> <span class="vi">@user</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">argument</span> <span class="o">==</span> <span class="vi">@argument</span> <span class="p">}</span><span class="o">.</span><span class="n">first</span>
+    <span class="vi">@vote</span> <span class="o">||=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">create</span><span class="p">(</span> <span class="ss">:citizen</span> <span class="o">=&gt;</span> <span class="vi">@user</span><span class="p">,</span> <span class="ss">:argument</span> <span class="o">=&gt;</span> <span class="vi">@argument</span> <span class="p">)</span>                                                                    
+    
+    <span class="k">case</span> <span class="n">params</span><span class="o">[</span><span class="ss">:value</span><span class="o">]</span>
+    <span class="k">when</span> <span class="s2">&quot;ja&quot;</span>
+      <span class="vi">@vote</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="vi">@vote</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;+1&quot;</span> <span class="p">?</span> <span class="s2">&quot;0&quot;</span> <span class="p">:</span> <span class="s2">&quot;+1&quot;</span>
+    <span class="k">when</span> <span class="s2">&quot;nej&quot;</span>
+      <span class="vi">@vote</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="vi">@vote</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;-1&quot;</span> <span class="p">?</span> <span class="s2">&quot;0&quot;</span> <span class="p">:</span> <span class="s2">&quot;-1&quot;</span>
+    <span class="k">else</span>
+      <span class="k">return</span> <span class="s2">&quot;Something went horribly wrong.&quot;</span>
+    <span class="k">end</span>
+    <span class="vi">@vote</span><span class="o">.</span><span class="n">save</span>
+    <span class="n">redirect</span> <span class="s2">&quot;/argument/</span><span class="si">#{</span><span class="vi">@argument</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-21'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-21">&#182;</a>
+        </div>
+        <p>Voting on propositions.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/proposition/:id/:value&quot;</span> <span class="k">do</span>
+    <span class="n">authorize!</span>
+    <span class="vi">@user</span> <span class="o">=</span> <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">]</span>
+    <span class="vi">@proposition</span> <span class="o">=</span> <span class="no">Proposition</span><span class="o">[</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]]</span>
+    <span class="nb">puts</span> <span class="s2">&quot;prop getting upvote: </span><span class="si">#{</span><span class="vi">@proposition</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-22'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-22">&#182;</a>
+        </div>
+        <p>@vote = Vote.find( :citizen =&gt; @user, :proposition =&gt; @proposition ).first || </p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="vi">@vote</span> <span class="o">=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">to_a</span><span class="o">.</span><span class="n">select</span><span class="p">{</span> <span class="o">|</span><span class="n">v</span><span class="o">|</span> <span class="n">v</span><span class="o">.</span><span class="n">citizen</span> <span class="o">==</span> <span class="vi">@user</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">proposition</span> <span class="o">==</span> <span class="vi">@proposition</span> <span class="p">}</span><span class="o">.</span><span class="n">first</span>
+    <span class="vi">@vote</span> <span class="o">||=</span> <span class="no">Vote</span><span class="o">.</span><span class="n">create</span><span class="p">(</span> <span class="ss">:citizen</span> <span class="o">=&gt;</span> <span class="vi">@user</span><span class="p">,</span> <span class="ss">:proposition</span> <span class="o">=&gt;</span> <span class="vi">@proposition</span> <span class="p">)</span>                                                                    
+    
+    <span class="nb">puts</span> <span class="s2">&quot;value give: </span><span class="si">#{</span><span class="n">params</span><span class="o">[</span><span class="ss">:value</span><span class="o">].</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">case</span> <span class="n">params</span><span class="o">[</span><span class="ss">:value</span><span class="o">]</span>
+    <span class="k">when</span> <span class="s2">&quot;ja&quot;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-23'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-23">&#182;</a>
+        </div>
+        <p>flash(&ldquo;Du röstade ja till detta förslag. Vote[#{@vote.id}]&rdquo;, :accept)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="vi">@vote</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;+1&quot;</span>
+    <span class="k">when</span> <span class="s2">&quot;nej&quot;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-24'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-24">&#182;</a>
+        </div>
+        <p>flash(&ldquo;Du röstade nej till detta förslag. Vote[#{@vote.id}]!&rdquo;, :accept)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="vi">@vote</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;-1&quot;</span>
+    <span class="k">when</span> <span class="s2">&quot;avstar&quot;</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-25'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-25">&#182;</a>
+        </div>
+        <p>flash(&ldquo;Du avstod från att rösta om detta förslag. Vote[#{@vote.id}]&rdquo;, :accept)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>      <span class="vi">@vote</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+    <span class="k">else</span>
+      <span class="k">return</span> <span class="s2">&quot;Something went horribly wrong.&quot;</span>
+    <span class="k">end</span>
+    <span class="vi">@vote</span><span class="o">.</span><span class="n">save</span>
+    <span class="n">redirect</span> <span class="s2">&quot;/proposition/</span><span class="si">#{</span><span class="vi">@proposition</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-26'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-26">&#182;</a>
+        </div>
+        <p>Render the sass template into CSS.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/css/style.css&quot;</span> <span class="k">do</span>
+    <span class="n">content_type</span> <span class="s1">&#39;text/css&#39;</span><span class="p">,</span> <span class="ss">:charset</span>  <span class="o">=&gt;</span> <span class="s1">&#39;utf-8&#39;</span>
+    <span class="n">sass</span> <span class="ss">:style</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-27'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-27">&#182;</a>
+        </div>
+        <p>Render about pages.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/om/:page&quot;</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-28'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-28">&#182;</a>
+        </div>
+        <p>haml :&ldquo;om/#{params[:id]}&rdquo;</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="vi">@page</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span>
+    <span class="n">haml</span> <span class="ss">:&#39;om/page&#39;</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-29'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-29">&#182;</a>
+        </div>
+        <p>The default about page is the introduction.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/om/?&quot;</span> <span class="k">do</span>
+    <span class="n">redirect</span> <span class="s1">&#39;/om/introduktion&#39;</span>
+  <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-30'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-30">&#182;</a>
+        </div>
+        <p>Special registration page for members of PP-listan.</p>
+
+<p>Later, this will be remade into the standard page for registring an account
+after receiving an invite.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/pp-listan&quot;</span> <span class="k">do</span>
+    <span class="n">haml</span> <span class="ss">:&#39;signups/pp-listan&#39;</span>
+  <span class="k">end</span>
+  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Admin_interface'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Admin_interface">&#182;</a>
+        </div>
+        <h2>Admin interface</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  </pre></div>
+      </td>
+    </tr>
+    <tr id='section-32'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-32">&#182;</a>
+        </div>
+        <p>This is a very, very basic but elegant admin interface. Basically, it takes
+any of the model class names, fetches all instances, renders a big table with
+all the instances and their attributes.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">get</span> <span class="s2">&quot;/admin&quot;</span> <span class="k">do</span>
+    <span class="k">return</span> <span class="mi">404</span> <span class="k">unless</span> <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">]</span>
+    <span class="k">return</span> <span class="mi">404</span> <span class="k">unless</span> <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">].</span><span class="n">admin</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
+    <span class="vi">@model</span> <span class="o">=</span> <span class="no">Kernel</span><span class="o">.</span><span class="n">const_get</span> <span class="n">params</span><span class="o">[</span><span class="s1">&#39;model&#39;</span><span class="o">].</span><span class="n">capitalize</span> <span class="k">rescue</span> <span class="kp">nil</span>
+    <span class="n">haml</span> <span class="ss">:admin</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-33'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-33">&#182;</a>
+        </div>
+        <p>The admin view also lets the admin user update the attribute fields.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">post</span> <span class="s2">&quot;/admin&quot;</span> <span class="k">do</span>
+    <span class="k">return</span> <span class="mi">404</span> <span class="k">unless</span> <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">]</span>
+    <span class="k">return</span> <span class="mi">404</span> <span class="k">unless</span> <span class="n">session</span><span class="o">[</span><span class="ss">:user</span><span class="o">].</span><span class="n">admin</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
+    <span class="vi">@model</span> <span class="o">=</span> <span class="no">Kernel</span><span class="o">.</span><span class="n">const_get</span> <span class="n">params</span><span class="o">[</span><span class="s1">&#39;model&#39;</span><span class="o">].</span><span class="n">capitalize</span> <span class="k">rescue</span> <span class="kp">nil</span>
+    <span class="vi">@item</span> <span class="o">=</span> <span class="vi">@model</span><span class="o">[</span><span class="n">params</span><span class="o">[</span><span class="s1">&#39;update&#39;</span><span class="o">].</span><span class="n">delete</span> <span class="s1">&#39;id&#39;</span><span class="o">]</span>
+    <span class="k">if</span> <span class="n">params</span><span class="o">[</span><span class="s1">&#39;delete&#39;</span><span class="o">]</span>
+      <span class="vi">@item</span><span class="o">.</span><span class="n">delete</span>
+      <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Raderade </span><span class="si">#{</span><span class="vi">@item</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="vi">@item</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="vi">@item</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span>
+      <span class="vi">@item</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="s1">&#39;update&#39;</span><span class="o">]</span><span class="p">)</span>
+      <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Uppdaterade </span><span class="si">#{</span><span class="vi">@item</span><span class="o">.</span><span class="n">class</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="vi">@item</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">#{</span><span class="vi">@item</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">redirect</span> <span class="s2">&quot;/admin?model=</span><span class="si">#{</span><span class="vi">@model</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-34'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-34">&#182;</a>
+        </div>
+        <p>Instead of frustrating 404 pages, redirect to frontpage and display a flash message.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">error</span> <span class="mi">404</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-35'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-35">&#182;</a>
+        </div>
+        <p>session[:flash_top] = flash(&ldquo;Sidan du angav kunde inte hittas (404).&rdquo;, :error)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="n">redirect</span> <span class="s2">&quot;/&quot;</span>
+  <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-Helpers'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Helpers">&#182;</a>
+        </div>
+        <h2>Helpers</h2>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-37'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-37">&#182;</a>
+        </div>
+        <p>Various web app helpers.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>  <span class="n">helpers</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-38'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-38">&#182;</a>
+        </div>
+        <p>Render a haml template as a partial.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">partial</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span>
+      <span class="n">haml</span> <span class="n">page</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="ss">:layout</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">)</span>
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-39'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-39">&#182;</a>
+        </div>
+        <p>Render a markdown template as a partial.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">md_partial</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{})</span>
+      <span class="p">(</span><span class="n">markdown</span> <span class="n">page</span><span class="p">,</span> <span class="n">options</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="ss">:layout</span> <span class="o">=&gt;</span> <span class="kp">false</span><span class="p">))</span><span class="o">.</span><span class="n">force_encoding</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+    <span class="k">end</span>
+    </pre></div>
+      </td>
+    </tr>
+    <tr id='section-40'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-40">&#182;</a>
+        </div>
+        <p>Display a flash message the next time a page is loaded.</p>
+
+<p>Usage: flash(&ldquo;Message&rdquo;, :type)
+In template: &ndash; if session[:flash<em>top] = session.delete(:flash</em>top)</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">flash</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="nb">type</span> <span class="o">=</span> <span class="ss">:error</span><span class="p">)</span>
+      <span class="n">session</span><span class="o">[</span><span class="ss">:flash_top</span><span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;</span>
+<span class="s2">        &lt;div class=&#39;flash_</span><span class="si">#{</span><span class="nb">type</span><span class="o">.</span><span class="n">to_s</span><span class="si">}</span><span class="s2">&#39;&gt;</span>
+
+<span class="s2"># DIVIDER</span>
+
+<span class="s2">          &amp;nbsp;</span>
+
+<span class="s2"># DIVIDER</span>
+
+<span class="s2">        &lt;/div&gt;&quot;</span>
+    <span class="k">end</span>
+
+  <span class="k">end</span>
+
+<span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-41'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-41">&#182;</a>
+        </div>
+        <p>{type == :error ? &lsquo;✘&rsquo; : &lsquo;✔&rsquo; }</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-42'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-42">&#182;</a>
+        </div>
+        <p>{msg}</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>

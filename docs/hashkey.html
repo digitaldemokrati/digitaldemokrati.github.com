@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <title>hashkey.rb</title>
+  <link rel="stylesheet" href="http://jashkenas.github.com/docco/resources/docco.css">
+</head>
+<body>
+<div id='container'>
+  <div id="background"></div>
+  <table cellspacing=0 cellpadding=0>
+  <thead>
+    <tr>
+      <th class=docs><h1>hashkey.rb</h1></th>
+      <th class=code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr id='section-1'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-1">&#182;</a>
+        </div>
+        
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-HashKey'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-HashKey">&#182;</a>
+        </div>
+        <h1>HashKey</h1>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre></pre></div>
+      </td>
+    </tr>
+    <tr id='section-3'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-3">&#182;</a>
+        </div>
+        <p>Keys used for email confirmation of new users. And maybe for other stuff&hellip;?</p>
+
+<p>NOTE: Key.check currently returns an email address. Perhaps it should have an
+      association to a User object instead&hellip;?</p>
+
+<p>NOTE: This should perhaps be reimagined as or be complemented by a class Invite.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre><span class="k">class</span> <span class="nc">HashKey</span> <span class="o">&lt;</span> <span class="no">Ohm</span><span class="o">::</span><span class="no">Model</span>
+  
+  <span class="n">attribute</span> <span class="ss">:email</span>    <span class="p">;</span> <span class="n">index</span> <span class="ss">:email</span>
+  <span class="n">attribute</span> <span class="ss">:hash</span>     <span class="p">;</span> <span class="n">index</span> <span class="ss">:hash</span>
+
+  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-4'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-4">&#182;</a>
+        </div>
+        <p>Create a new hash</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">add</span> <span class="n">email_added</span>
+      <span class="n">create</span><span class="p">(</span>
+        <span class="ss">:email</span> <span class="o">=&gt;</span> <span class="n">email_added</span><span class="p">,</span>
+        <span class="ss">:hash</span> <span class="o">=&gt;</span> <span class="no">Digest</span><span class="o">::</span><span class="no">SHA1</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">(</span><span class="n">email_added</span><span class="o">.</span><span class="n">inspect</span> <span class="o">+</span> <span class="nb">rand</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">inspect</span><span class="p">)</span>
+      <span class="p">)</span> 
+    <span class="k">end</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-5'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-5">&#182;</a>
+        </div>
+        <p>Lookup an existing hash</p>
+
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>    <span class="k">def</span> <span class="nf">check</span> <span class="n">hash_checked</span>
+      <span class="n">k</span> <span class="o">=</span> <span class="n">find</span><span class="p">(</span> <span class="ss">:hash</span> <span class="o">=&gt;</span> <span class="n">hash_checked</span> <span class="p">)</span><span class="o">.</span><span class="n">first</span>
+      <span class="nb">puts</span> <span class="s2">&quot;found this key: </span><span class="si">#{</span><span class="n">k</span><span class="o">.</span><span class="n">inspect</span><span class="si">}</span><span class="s2">&quot;</span>
+      <span class="k">return</span> <span class="n">k</span><span class="o">.</span><span class="n">email</span> <span class="k">if</span> <span class="n">k</span>
+    <span class="k">end</span>
+
+  <span class="k">end</span>
+
+<span class="k">end</span></pre></div>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
